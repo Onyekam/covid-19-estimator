@@ -17,12 +17,11 @@ function covid19ImpactEstimator($data) {
   $severeImpact['casesForVentilatorsByRequestedTime'] = estimateCasesForVentilatorsByRequestedTime($severeImpact['infectionsByRequestedTime']);
   $severeImpact['dollarsInFlight'] = estimateDollarsInFlight($severeImpact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD']);
 
-  $estimatorOutput = json_encode(
-    array(
+  $estimatorOutput = array(
       'data' => $data,
       'impact' => $impact,
       'severeImpact' => $severeImpact
-    ));
+    );
   return $estimatorOutput;
 }
 
@@ -36,7 +35,7 @@ function estimateSevereImpact($reportedCases) {
   return $currentlyInfected;
 }
 
-function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $periodType = "days") {
+function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $periodType) {
   switch ($periodType) {
     case "weeks":
       $days = $timeToElapse * 7;
@@ -47,8 +46,11 @@ function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $p
     default:
       $days = $timeToElapse;
   }
+  
   $setsOf3Days = (int)($days / 3);
-  $infectionsByRequestedTime = (int)($currentlyInfected * pow(2, $setsOf3Days));
+  //echo $setsOf3Days."<br/>";
+  $infectionsByRequestedTime = ($currentlyInfected * pow(2, $setsOf3Days));
+  //echo $infectionsByRequestedTime; die;
   return $infectionsByRequestedTime;
 }
 
