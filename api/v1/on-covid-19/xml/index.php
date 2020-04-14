@@ -23,7 +23,7 @@ $xml = new SimpleXMLElement("<?xml version=\"1.0\"?><covid_19_estimator></covid_
 array_to_xml($estimatorOutput, $xml);
 print $xml->asXML();
 $executionTime = (int)(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000;
-$request = 'GET'.'   '.$_SERVER['REQUEST_URI'].'   '.http_response_code().'   '.$executionTime.'ms'."\n";
+$request = 'GET'.'   '.$_SERVER['REQUEST_URI'].'   '.http_response_code().'   '.'0'.$executionTime.'ms'."\n";
 updateLog($request);
 
 

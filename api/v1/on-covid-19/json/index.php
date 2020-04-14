@@ -19,5 +19,5 @@ $data = array(
 
 echo json_encode(covid19ImpactEstimator($data));
 $executionTime = (int)(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000;
-$request = 'GET'.'   '.$_SERVER['REQUEST_URI'].'   '.http_response_code().'   '.$executionTime.'ms'."\n";
+$request = 'GET'.'   '.$_SERVER['REQUEST_URI'].'   '.http_response_code().'   '.'0'.$executionTime.'ms'."\n";
 updateLog($request);
