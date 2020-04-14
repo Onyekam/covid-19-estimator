@@ -60,8 +60,8 @@ function estimateSevereCasesByRequestedTime($infectionsByRequestedTime) {
 }
 
 function estimateHospitalBedsByRequestedTime($severeCasesByRequestedTime, $totalHospitalBeds) {
-  $availableBeds = (int)($totalHospitalBeds * 0.35);
-  $hospitalBedsByRequestedTime = $availableBeds - $severeCasesByRequestedTime;
+  $availableBeds = $totalHospitalBeds * 0.35;
+  $hospitalBedsByRequestedTime = (int)($availableBeds - $severeCasesByRequestedTime);
   return $hospitalBedsByRequestedTime;
 }
 
