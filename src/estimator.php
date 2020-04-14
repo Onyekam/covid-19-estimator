@@ -1,46 +1,23 @@
 <?php
 
-//echo (int)(50 / 3);
-
-$data = json_encode(array(
-  "region" => array(
-    "name" => "Africa",
-    "avgAge" => 19.7,
-    "avgDailyIncomeInUSD" => 5,
-    "avgDailyIncomePopulation" => 0.71
-  ),
-  "periodType" => "days",
-  "timeToElapse" => 58,
-  "reportedCases" => 674,
-  "population" => 66622705,
-  "totalHospitalBeds" => 1380614
-));
-
 function covid19ImpactEstimator($data) {
-  
-  $impact = json_encode(
-    array(
-      'currentlyInfected' => estimateImpact($data->reportedCases), 
-      'infectionsByRequestedTime' => estimateInfectionsByRequestedTime($impact->currentlyInfected),
-      'severeCasesByRequestedTime' => estimateSevereCasesByRequestedTime($impact->infectionsByRequestedTime),
-      'hospitalBedsByRequestedTime' => estimateHospitalBedsByRequestedTime($impact->severeCasesByRequestedTime, $data->totalHospitalBeds),
-      'casesForICUByRequestedTime' => estimateCasesForICUByRequestedTime($impact->infectionsByRequestedTime),
-      'casesForVentilatorsByRequestedTime' => estimateCasesForVentilatorsByRequestedTime($impact->infectionsByRequestedTime),
-      'dollarsInFlight' => estimateDollarsInFlight($impact->infectionsByRequestedTime, $data->region->avgDailyIncomePopulation, $data->region->avgDailyIncomeInUSD)
-    ));
+  $impact['currentlyInfected'] = estimateImpact($data['reportedCases']);
+  $impact['infectionsByRequestedTime'] = estimateInfectionsByRequestedTime($impact['currentlyInfected'], $data['timeToElapse'], $data['periodType']);
+  $impact['severeCasesByRequestedTime'] = estimateSevereCasesByRequestedTime($impact['infectionsByRequestedTime']);
+  $impact['hospitalBedsByRequestedTime'] = estimateHospitalBedsByRequestedTime($impact['severeCasesByRequestedTime'], $data['totalHospitalBeds']);
+  $impact['casesForICUByRequestedTime'] = estimateCasesForICUByRequestedTime($impact['infectionsByRequestedTime']);
+  $impact['casesForVentilatorsByRequestedTime'] = estimateCasesForVentilatorsByRequestedTime($impact['infectionsByRequestedTime']);
+  $impact['dollarsInFlight'] = estimateDollarsInFlight($impact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD']);
 
-  $severeImpact = json_encode(
-    array(
-      'currentlyInfected' => estimateSevereImpact($data->reportedCases),
-      'infectionsByRequestedTime' => estimateInfectionsByRequestedTime($severeImpact->currentlyInfected),
-      'severeCasesByRequestedTime' => estimateSevereCasesByRequestedTime($severeImpact->infectionsByRequestedTime),
-      'hospitalBedsByRequestedTime' => estimateHospitalBedsByRequestedTime($severeImpact->severeCasesByRequestedTime, $data->totalHospitalBeds),
-      'casesForICUByRequestedTime' => estimateCasesForICUByRequestedTime($severeImpact->infectionsByRequestedTime),
-      'casesForVentilatorsByRequestedTime' => estimateCasesForVentilatorsByRequestedTime($severeImpact->infectionsByRequestedTime),
-      'dollarsInFlight' => estimateDollarsInFlight($severeImpact->infectionsByRequestedTime, $data->region->avgDailyIncomePopulation, $data->region->avgDailyIncomeInUSD)
-    ));
+  $severeImpact['currentlyInfected'] = estimateSevereImpact($data['reportedCases']);
+  $severeImpact['infectionsByRequestedTime'] = estimateInfectionsByRequestedTime($severeImpact['currentlyInfected'], $data['timeToElapse'], $data['periodType']);
+  $severeImpact['severeCasesByRequestedTime'] = estimateSevereCasesByRequestedTime($severeImpact['infectionsByRequestedTime']);
+  $severeImpact['hospitalBedsByRequestedTime'] = estimateHospitalBedsByRequestedTime($severeImpact['severeCasesByRequestedTime'], $data['totalHospitalBeds']);
+  $severeImpact['casesForICUByRequestedTime'] = estimateCasesForICUByRequestedTime($severeImpact['infectionsByRequestedTime']);
+  $severeImpact['casesForVentilatorsByRequestedTime'] = estimateCasesForVentilatorsByRequestedTime($severeImpact['infectionsByRequestedTime']);
+  $severeImpact['dollarsInFlight'] = estimateDollarsInFlight($severeImpact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD']);
 
-  $estimatorOuput = json_encode(
+  $estimatorOutput = json_encode(
     array(
       'data' => $data,
       'impact' => $impact,
@@ -63,15 +40,16 @@ function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $p
   switch ($periodType) {
     case "weeks":
       $days = $timeToElapse * 7;
+    break;
     case "months":
       $days = $timeToElapse * 30;
+    break;
     default:
       $days = $timeToElapse;
   }
   $setsOf3Days = (int)($days / 3);
   $infectionsByRequestedTime = (int)($currentlyInfected * pow(2, $setsOf3Days));
   return $infectionsByRequestedTime;
-  
 }
 
 function estimateSevereCasesByRequestedTime($infectionsByRequestedTime) {
