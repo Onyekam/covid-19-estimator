@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 include "../../../src/estimator.php";
-include "logs/index.php";
+include "logs/updatelog.php";
 
 $data = array(
     "region" => array(

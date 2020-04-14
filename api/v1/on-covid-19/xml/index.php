@@ -1,7 +1,7 @@
 <?php
 header("content-Type:text/xml");
 include "../../../../src/estimator.php";
-include "../logs/index.php";
+include "../logs/updatelog.php";
 
 $data = array(
     "region" => array(
