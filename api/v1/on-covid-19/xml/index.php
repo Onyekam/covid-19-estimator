@@ -3,20 +3,23 @@ header("content-Type:text/xml");
 include "../../../../src/estimator.php";
 include "../logs/updatelog.php";
 
-$data = array(
-    "region" => array(
-      "name" => "Africa",
-      "avgAge" => 19.7,
-      "avgDailyIncomeInUSD" => 5,
-      "avgDailyIncomePopulation" => 0.71
-    ),
-    "periodType" => "days",
-    "timeToElapse" => 58,
-    "reportedCases" => 674,
-    "population" => 66622705,
-    "totalHospitalBeds" => 1380614
-  );
-
+if (json_decode(file_get_contents('php://input'), true)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+  } else {
+    $data = array(
+        "region" => array(
+          "name" => "Africa",
+          "avgAge" => 19.7,
+          "avgDailyIncomeInUSD" => 5,
+          "avgDailyIncomePopulation" => 0.71
+        ),
+        "periodType" => "days",
+        "timeToElapse" => 58,
+        "reportedCases" => 674,
+        "population" => 66622705,
+        "totalHospitalBeds" => 1380614
+    );
+}
 $estimatorOutput = covid19ImpactEstimator($data);
 
 $xml = new SimpleXMLElement("<?xml version=\"1.0\"?><root></root>");
