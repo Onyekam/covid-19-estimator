@@ -19,7 +19,7 @@ $data = array(
 
 $estimatorOutput = covid19ImpactEstimator($data);
 
-$xml = new SimpleXMLElement("<?xml version=\"1.0\"?><covid_19_estimator></covid_19_estimator>");
+$xml = new SimpleXMLElement("<?xml version=\"1.0\"?><root></root>");
 array_to_xml($estimatorOutput, $xml);
 print $xml->asXML();
 $executionTime = (int)(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000;
