@@ -7,7 +7,7 @@ function covid19ImpactEstimator($data) {
   $impact['hospitalBedsByRequestedTime'] = estimateHospitalBedsByRequestedTime($impact['severeCasesByRequestedTime'], $data['totalHospitalBeds']);
   $impact['casesForICUByRequestedTime'] = estimateCasesForICUByRequestedTime($impact['infectionsByRequestedTime']);
   $impact['casesForVentilatorsByRequestedTime'] = estimateCasesForVentilatorsByRequestedTime($impact['infectionsByRequestedTime']);
-  $impact['dollarsInFlight'] = estimateDollarsInFlight($impact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD']);
+  $impact['dollarsInFlight'] = estimateDollarsInFlight($impact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD'], $data['timeToElapse'], $data['periodType']);
 
   $severeImpact['currentlyInfected'] = estimateSevereImpact($data['reportedCases']);
   $severeImpact['infectionsByRequestedTime'] = estimateInfectionsByRequestedTime($severeImpact['currentlyInfected'], $data['timeToElapse'], $data['periodType']);
@@ -15,7 +15,7 @@ function covid19ImpactEstimator($data) {
   $severeImpact['hospitalBedsByRequestedTime'] = estimateHospitalBedsByRequestedTime($severeImpact['severeCasesByRequestedTime'], $data['totalHospitalBeds']);
   $severeImpact['casesForICUByRequestedTime'] = estimateCasesForICUByRequestedTime($severeImpact['infectionsByRequestedTime']);
   $severeImpact['casesForVentilatorsByRequestedTime'] = estimateCasesForVentilatorsByRequestedTime($severeImpact['infectionsByRequestedTime']);
-  $severeImpact['dollarsInFlight'] = estimateDollarsInFlight($severeImpact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD']);
+  $severeImpact['dollarsInFlight'] = estimateDollarsInFlight($severeImpact['infectionsByRequestedTime'], $data['region']['avgDailyIncomePopulation'], $data['region']['avgDailyIncomeInUSD'], $data['timeToElapse'], $data['periodType']);
 
   $estimatorOutput = array(
       'data' => $data,
@@ -35,7 +35,7 @@ function estimateSevereImpact($reportedCases) {
   return $currentlyInfected;
 }
 
-function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $periodType) {
+function obtainNumberOfDays($timeToElapse, $periodType) {
   switch ($periodType) {
     case "weeks":
       $days = $timeToElapse * 7;
@@ -47,7 +47,11 @@ function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $p
       $days = $timeToElapse;
     break;
   }
-  
+  return $days;
+}
+
+function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $periodType) {
+  $days = obtainNumberOfDays($timeToElapse, $periodType);
   $setsOf3Days = (int)($days / 3);
   $infectionsByRequestedTime = (int)($currentlyInfected * pow(2, $setsOf3Days));
   return $infectionsByRequestedTime;
@@ -74,7 +78,8 @@ function estimateCasesForVentilatorsByRequestedTime($infectionsByRequestedTime) 
   return $casesForVentilatorsByRequestedTime;
 }
 
-function estimateDollarsInFlight($infectionsByRequestedTime, $avgDailyIncomePopulation, $avgDailyIncomeInUSD) {
-  $dollarsInFlight = (int)(($infectionsByRequestedTime * $avgDailyIncomePopulation * $avgDailyIncomeInUSD)/30); 
+function estimateDollarsInFlight($infectionsByRequestedTime, $avgDailyIncomePopulation, $avgDailyIncomeInUSD, $timeToElapse, $periodType) {
+  $days = obtainNumberOfDays($timeToElapse, $periodType);
+  $dollarsInFlight = (int)(($infectionsByRequestedTime * $avgDailyIncomePopulation * $avgDailyIncomeInUSD) / $days); 
   return $dollarsInFlight;
 }
