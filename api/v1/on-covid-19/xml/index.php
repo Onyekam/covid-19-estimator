@@ -2,9 +2,10 @@
 header("content-Type:text/xml");
 include "../../../../src/estimator.php";
 include "../logs/updatelog.php";
-
-if (json_decode(file_get_contents('php://input'), true)) {
-    $data = json_decode(file_get_contents('php://input'), true);
+$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+if (json_decode(file_get_contents($url), true)) {
+    $response = file_get_contents($url);
+    $data = json_decode($response, true);
   } else {
     $data = array(
         "region" => array(
@@ -19,10 +20,10 @@ if (json_decode(file_get_contents('php://input'), true)) {
         "population" => 66622705,
         "totalHospitalBeds" => 1380614
     );
-}
+  }
 $estimatorOutput = covid19ImpactEstimator($data);
 
-$xml = new SimpleXMLElement("<?xml version=\"1.0\"?><root></root>");
+$xml = new SimpleXMLElement("<root></root>");
 array_to_xml($estimatorOutput, $xml);
 print $xml->asXML();
 $executionTime = (int)(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000;

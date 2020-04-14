@@ -2,9 +2,10 @@
 header("Content-Type: application/json; charset=UTF-8");
 include "../../../src/estimator.php";
 include "logs/updatelog.php";
-
-if (json_decode(file_get_contents('php://input'), true)) {
-    $data = json_decode(file_get_contents('php://input'), true);
+$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+if (json_decode(file_get_contents($url), true)) {
+    $response = file_get_contents($url);
+    $data = json_decode($response, true);
   } else {
     $data = array(
         "region" => array(
