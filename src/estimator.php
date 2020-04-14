@@ -45,12 +45,11 @@ function estimateInfectionsByRequestedTime($currentlyInfected, $timeToElapse, $p
     break;
     default:
       $days = $timeToElapse;
+    break;
   }
   
   $setsOf3Days = (int)($days / 3);
-  //echo $setsOf3Days."<br/>";
-  $infectionsByRequestedTime = ($currentlyInfected * pow(2, $setsOf3Days));
-  //echo $infectionsByRequestedTime; die;
+  $infectionsByRequestedTime = (int)($currentlyInfected * pow(2, $setsOf3Days));
   return $infectionsByRequestedTime;
 }
 
